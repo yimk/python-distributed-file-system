@@ -69,7 +69,8 @@ def secure_upload(data, fname, uid):
         headers = {'id': uid, 'file_server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
         response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
                             headers=headers)
-        (encrypted_client_tmp_pbk, fs_tmp_pvk) = response.headers.get('ticket')
+        encrypted_client_tmp_pbk = response.headers.get('client')
+        fs_tmp_pvk = response.headers.get('filer_server')
         client_tmp_pbk = security_helper.encrypt(encrypted_client_tmp_pbk, constant.PRIVATE_KEY)
 
         # encrypt data with client tmp public key

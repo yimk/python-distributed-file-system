@@ -44,3 +44,8 @@ CLIENT_PUBLIC_KEY = []
 CLIENT_PUBLIC_KEY[0] = "4ThisIsARandomlyGenAESpublicKey4"
 CLIENT_PUBLIC_KEY[1] = "4ThisIsARandomlyGenAESpublicKey4"
 CLIENT_PUBLIC_KEY[3] = "4ThisIsARandomlyGenAESpublicKey4"
+
+FILE_SERVER_PUBLIC_KEY = []
+FILE_SERVER_PUBLIC_KEY[0] = "4ThisIsARandomlyGenAESpublicKey4"
+FILE_SERVER_PUBLIC_KEY[1] = "4ThisIsARandomlyGenAESpublicKey4"
+FILE_SERVER_PUBLIC_KEY[3] = "4ThisIsARandomlyGenAESpublicKey4"
