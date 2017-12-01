@@ -26,7 +26,7 @@ def assign_upload_directory():
     """
     if file name already exists
     the file system will overwrite the old file with the new file
-    however, the file system will inform that to the client with the response
+    however, the directory server should inform that to the client with the response
     """
     
     if not :
@@ -40,7 +40,7 @@ def assign_upload_directory():
         return jsonify({'client': encrypted_pbk, 'filer_server': encrypted_pvk})
 
 @app.route('/user/download-assign', methods=['POST'])
-def generate_ticket():
+def assign_download_directory():
 
     # retrieve essential information
     data = request.get_json(force=True)
