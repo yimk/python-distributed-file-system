@@ -1,9 +1,19 @@
 import constant
 from pymongo import MongoClient
 
-def dbSetup():
 
-    # mongo setup
-    connect_string = constant.MONGO_HEADING + constant.MONGO_SERVER + ":" + constant.MONGO_PORT
-    connection = MongoClient(connect_string)
-    return connection.project
+def directory_table():
+    client = MongoClient("localhost", 27017)
+    return client['test-database'].get_collection('test-collection-directory')
+
+
+def db_insert_single_directory(file, file_code):
+    post = {
+        "file": file,
+        "file_code": file_code,
+    }
+    directory_table().insert_one(post)
+
+
+def db_get_directory(file):
+    return directory_table().find({"file": file})

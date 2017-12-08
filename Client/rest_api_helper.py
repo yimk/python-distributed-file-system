@@ -5,6 +5,7 @@ import json
 import constant
 import requests
 
+
 def secure_upload(data, fname, uid):
 
     # encrypt data and fname
@@ -151,6 +152,7 @@ def secure_download(fname, uid):
     headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk}
     response = requests.post(constant.DOWNLOAD_FILE_REQUEST, data=json.dumps(""),
                              headers=headers)
+
 
 def file_exists(fname):
     pass

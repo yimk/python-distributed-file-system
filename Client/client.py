@@ -1,6 +1,5 @@
 import constant
-import communication_helper
-
+import rest_api_helper
 
 
 def handle_upload_command(param, is_transaction):
@@ -15,24 +14,24 @@ def handle_upload_command(param, is_transaction):
     # request communication helper to upload the data securely
     # based on pre-decided protocol
     if is_transaction:
-        communication_helper.secure_transaction_upload(data, fname, constant.USER_ID)
+        rest_api_helper.secure_transaction_upload(data, fname, constant.USER_ID)
     else:
-        communication_helper.secure_upload(data, fname, constant.USER_ID)
+        rest_api_helper.secure_upload(data, fname, constant.USER_ID)
 
 
 def handle_download_command(param):
 
     # get essential variable
     target = param[0]
-    destiantion = param[1]
+    destination = param[1]
 
     # download the file
     # the file will be decrpyted by communication helper as this is part of the protocol
-    data = communication_helper.secure_download(target)
+    data = rest_api_helper.secure_download(target)
 
     # write file to the destination
     print("Data: \n" + data)
-    open(destiantion + "/" + target, 'w').write(data)
+    open(destination + "/" + target, 'w').write(data)
 
 
 def run_client():

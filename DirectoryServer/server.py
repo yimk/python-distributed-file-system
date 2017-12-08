@@ -3,9 +3,11 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 import security_helper
+import db_helper
 
 
 app = Flask(__name__)
+
 
 @app.route('/user/upload-assign', methods=['POST'])
 def assign_upload_directory():
@@ -29,7 +31,7 @@ def assign_upload_directory():
     however, the directory server should inform that to the client with the response
     """
     
-    if not :
+    if not db_helper.db_get_directory(file_name):
         return None
     else:
 
