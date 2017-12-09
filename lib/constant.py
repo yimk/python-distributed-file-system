@@ -1,3 +1,4 @@
+package
 # host
 LOCALHOST = "localhost"
 DIRECTORY_SERVER_HOST = LOCALHOST
@@ -39,16 +40,12 @@ AUTHENTICATION_SERVER_GET_TICKET_REQUEST = "http://{}:{}/user/get-ticket".format
 DIRECTORY_SERVER_PUBLIC_KEY = "4ThisIsARandomlyGenAESpublicKey4"
 AUTHENTICATION_SERVER_PUBLIC_KEY = "4ThisIsARandomlyGenAESpublicKey4"
 
-# Private keys
-DIRECTORY_SERVER_PRIVATE_KEY = "4ThisIsARandomlyGenAESpublicKey4"
-AUTHENTICATION_SERVER_PRIVATE_KEY = "4ThisIsARandomlyGenAESpublicKey4"
+CLIENT_PUBLIC_KEY = []
+CLIENT_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")
+CLIENT_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")
+CLIENT_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")
 
-CLIENT_PUBLIC_KEY = {}
-CLIENT_PUBLIC_KEY[1] = ("4ThisIsARandomlyGenAESpublicKey4")
-CLIENT_PUBLIC_KEY[2] = ("4ThisIsARandomlyGenAESpublicKey4")
-CLIENT_PUBLIC_KEY[3] = ("4ThisIsARandomlyGenAESpublicKey4")
-
-FILE_SERVER_PUBLIC_KEY = {}
-FILE_SERVER_PUBLIC_KEY[1] = ("4ThisIsARandomlyGenAESpublicKey4")
-FILE_SERVER_PUBLIC_KEY[2] = ("4ThisIsARandomlyGenAESpublicKey4")
-FILE_SERVER_PUBLIC_KEY[3] = ("4ThisIsARandomlyGenAESpublicKey4")
+FILE_SERVER_PUBLIC_KEY = []
+FILE_SERVER_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")
+FILE_SERVER_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")
+FILE_SERVER_PUBLIC_KEY.append("4ThisIsARandomlyGenAESpublicKey4")

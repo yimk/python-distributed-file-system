@@ -10,18 +10,14 @@ app = Flask(__name__)
 
 
 @app.route('/user/upload-assign', methods=['POST'])
-def assign_upload_directory():
+def upload_file():
 
     # retrieve essential information
     data = request.get_json(force=True)
-    user_id = request.headers.get('id')
+    user_id = data.get('id')
     encrypted_file_name = data.get('filename')
     encrypted_client_pbk= data.get('access_key')
-    ticket = data.get('ticket')
 
-    # validate the ticket and fail the request if validation failed
-    if helper.decrypt(ticket, constant.DIRECTORY_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
-        return None
 
     # decrypt the encrypted_key with auth server's private key
     # this helps client to ensure we are the right auth server, not man-in-middle
@@ -37,7 +33,7 @@ def assign_upload_directory():
     """
     
     if not helper.db_get_directory(file_name):
-        return jsonify({'exists': True})
+        return None
     else:
         # return ticket
         (tmp_pbk, tmp_pvk) = helper.generate_ticket()
@@ -46,7 +42,7 @@ def assign_upload_directory():
         return jsonify({'client': encrypted_pbk, 'filer_server': encrypted_pvk})
 
 @app.route('/user/download-assign', methods=['POST'])
-def assign_download_directory():
+def download_file():
 
     # retrieve essential information
     data = request.get_json(force=True)
@@ -77,4 +73,5 @@ def assign_download_directory():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False, port=constant.DIRECTORY_SERVER_PORT)
+    app.run(host=constant.DIRECTORY_SERVER_PORT)
+

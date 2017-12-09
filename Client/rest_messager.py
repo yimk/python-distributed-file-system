@@ -1,15 +1,29 @@
-import security_helper
-import db_helper
 import base64
 import json
-import constant
 import requests
+import helper
+
+import constant
 
 
 def secure_upload(data, fname, uid):
 
-    # encrypt data and fname
-    secure_fname = security_helper.encrypt(fname, constant.PUBLIC_KEY)
+    """
+    Communicating with Authentication Server, get ticket for directory server    
+    """
+
+    # get ticket
+    directory_server = helper.encrypt("directory", constant.PRIVATE_KEY)
+    encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, constant.PRIVATE_KEY)
+    headers = {'id': uid, 'server': directory_server, 'security_check': encrypted_auth_server_pbk}
+    response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
+                             headers=headers)
+
+    # decrypt the pbk and use it to encrypt sensitive information
+    encrypted_client_tmp_pbk = response.headers.get('client')
+    encrpyted_directory_sever_tmp_pvk = response.headers.get('server')
+    ticket = response.headers.get('ticket')
+    client_tmp_pbk_for_directory_server = helper.decrypt(encrypted_client_tmp_pbk, constant.PRIVATE_KEY)
 
     """
     Communicating with Directory Server:
@@ -23,15 +37,17 @@ def secure_upload(data, fname, uid):
     this ensures man-in-middle will not be able to pretend to be the directory server and MAKE CLIENT UPLOAD FILES TO SPY SERVER 
     """
 
-    secure_pbk = security_helper.encrypt(constant.PUBLIC_KEY, constant.DIRECTORY_SERVER_PUBLIC_KEY)
-    headers = {'id': uid, 'filename': secure_fname, 'access_key': secure_pbk}
-    response = requests.post(constant.DIRECTORY_SERVER_UPLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps(""),
+    # encrypt file name with client tmp public key
+    secure_fname = helper.encrypt(fname, client_tmp_pbk_for_directory_server)
+
+    headers = {'id': uid, 'filename': secure_fname, 'access_key': encrpyted_directory_sever_tmp_pvk, 'ticket': ticket}
+    response = requests.post(constant.DIRECTORY_SERVER_UPLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({""}),
                             headers=headers)
 
     # parse and decrypt response, the target file server's address is stored in header
     # file will use file code as the file name is distributed file system
-    upload_destinations = security_helper.decrypt(response.headers.get('destianations'))
-    file_code = security_helper.decrypt(response.headers.get('code'))
+    encrypted_upload_destinations = response.headers.get('destianations')
+    file_code = helper.decrypt(response.headers.get('code'), client_tmp_pbk_for_directory_server)
 
     """
     Communicating with Authentication Server, get ticket and upload file:
@@ -62,31 +78,36 @@ def secure_upload(data, fname, uid):
     The file server will decrypt it with the tmp private key, which needs to be decrypted first with it's own private key
     """
 
-    for destination in upload_destinations:
+    for destination in encrypted_upload_destinations:
 
-        # get ticket
-        secure_file_server = security_helper.encrypt(destination, constant.PRIVATE_KEY)
-        encrypted_auth_server_pbk = security_helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, constant.PRIVATE_KEY)
-        headers = {'id': uid, 'file_server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
+        # decrypt the destination
+        destination = helper.decrypt(destination, client_tmp_pbk_for_directory_server)
+
+        # get ticket from auth server
+        secure_file_server = helper.encrypt(destination, constant.PRIVATE_KEY)
+        encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, constant.PRIVATE_KEY)
+        headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
         response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
                             headers=headers)
-        encrypted_client_tmp_pbk = response.headers.get('client')
-        fs_tmp_pvk = response.headers.get('filer_server')
-        client_tmp_pbk = security_helper.encrypt(encrypted_client_tmp_pbk, constant.PRIVATE_KEY)
+
+        # decypt keys and ticket
+        fs_tmp_pvk = response.headers.get('server')
+        ticket = response.headers.get('ticket')
+        client_tmp_pbk = helper.encrypt(response.headers.get('client'), constant.PRIVATE_KEY)
 
         # encrypt data with client tmp public key
-        secure_data = security_helper.encrypt(data, client_tmp_pbk)
-        secure_file_code = security_helper.encrypt(file_code, client_tmp_pbk)
+        secure_data = helper.encrypt(data, client_tmp_pbk)
+        secure_file_code = helper.encrypt(file_code, client_tmp_pbk)
 
         # send the file
-        headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk}
-        response = requests.post(constant.UPLOAD_FILE_REQUEST, data=json.dumps(secure_data),
+        headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
+        response = requests.post(constant.UPLOAD_FILE_REQUEST, data=json.dumps({'data': secure_data}),
                                  headers=headers)
 
 
 def secure_download(fname, uid):
     # encrypt data and fname
-    secure_fname = security_helper.encrypt(fname, constant.PUBLIC_KEY)
+    secure_fname = helper.encrypt(fname, constant.PUBLIC_KEY)
 
     """
     Communicating with Directory Server:
@@ -100,15 +121,15 @@ def secure_download(fname, uid):
     this ensures man-in-middle will not be able to pretend to be the directory server and find out the address of the host that holds the file
     """
 
-    secure_pbk = security_helper.encrypt(constant.PUBLIC_KEY, constant.DIRECTORY_SERVER_PUBLIC_KEY)
+    secure_pbk = helper.encrypt(constant.PUBLIC_KEY, constant.DIRECTORY_SERVER_PUBLIC_KEY)
     headers = {'id': uid, 'filename': secure_fname, 'access_key': secure_pbk}
     response = requests.post(constant.DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST_DESTINATION_ASSIGNING_REQUEST, data=json.dumps(""),
                              headers=headers)
 
     # parse and decrypt response, the target file server's address is stored in header
     # file will use file code as the file name is distributed file system
-    download_address = security_helper.decrypt(response.headers.get('address'))
-    file_code = security_helper.decrypt(response.headers.get('code'))
+    download_address = helper.decrypt(response.headers.get('address'))
+    file_code = helper.decrypt(response.headers.get('code'))
 
     """
     Communicating with Authentication Server, get ticket and upload file:
@@ -138,15 +159,15 @@ def secure_download(fname, uid):
 
 
     # get ticket
-    secure_file_server = security_helper.encrypt(download_address, constant.PRIVATE_KEY)
+    secure_file_server = helper.encrypt(download_address, constant.PRIVATE_KEY)
     headers = {'id': uid, 'file_server': download_address, 'secure_file_server': secure_file_server}
     response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
                              headers=headers)
     (encrypted_client_tmp_pbk, fs_tmp_pvk) = response.headers.get('ticket')
-    client_tmp_pbk = security_helper.encrypt(encrypted_client_tmp_pbk, constant.PRIVATE_KEY)
+    client_tmp_pbk = helper.encrypt(encrypted_client_tmp_pbk, constant.PRIVATE_KEY)
 
     # encrypt data with client tmp public key
-    secure_file_code = security_helper.encrypt(file_code, client_tmp_pbk)
+    secure_file_code = helper.encrypt(file_code, client_tmp_pbk)
 
     # send the file
     headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk}
