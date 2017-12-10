@@ -33,5 +33,5 @@ def decrypt(data, key):
 
 
 def generate_ticket():
-    return ('pbk', 'pvk')
+    return 'tmp_pbk', 'tmp_pvk'
 

@@ -10,12 +10,13 @@ app = Flask(__name__)
 def generate_ticket():
 
     # retrieve essential information
-    data = request.get_json(force=True)
-    user_id = data.get('id')
-    server = data.get('server')
-    security_check = data.get('security_check')
+    user_id = request.headers.get('id')
+    encrypted_server = request.headers.get('server')
+    security_check = request.headers.get('security_check')
+    client_pbk = constant.CLIENT_PUBLIC_KEY[user_id]
 
     # find out the server public key based on the request
+    server = helper.decrypt(encrypted_server, client_pbk)
     if server == "directory":
         fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
     elif server == "locking":
@@ -23,6 +24,8 @@ def generate_ticket():
     elif server == "transaction":
         fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
     else:
+        # find file server id based on addr
+        
         fs_pbk = constant.FILE_SERVER_PUBLIC_KEY[server]
 
     """
@@ -32,7 +35,6 @@ def generate_ticket():
         - has auth server's public key
         - has target client's private key
     """
-    client_pbk = constant.CLIENT_PUBLIC_KEY[user_id]
     security_check = helper.decrypt(security_check, client_pbk)
 
     if not security_check == constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
@@ -69,5 +71,5 @@ def generate_ticket():
 
 
 if __name__ == '__main__':
-    app.run(host=constant.AUTHENTICATION_SERVER_PORT)
+    app.run(debug=False, use_reloader=False, port=constant.AUTHENTICATION_SERVER_PORT)
 
