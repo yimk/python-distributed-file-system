@@ -25,8 +25,12 @@ def generate_ticket():
         fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
     else:
         # find file server id based on addr
-        
-        fs_pbk = constant.FILE_SERVER_PUBLIC_KEY[server]
+        server = helper.decrypt(encrypted_server, client_pbk)
+        for key in constant.FILE_SERVER_PORT:
+            if server == constant.FILE_SERVER_HOST[key] + ':' + constant.FILE_SERVER_PORT[key]:
+                fs_pbk = constant.FILE_SERVER_PUBLIC_KEY[key]
+                break
+
 
     """
     Security Check, on the authentication server side, we do need to worry about the fake Client issue. To make authetication server trust our request,

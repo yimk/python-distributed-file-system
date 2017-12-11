@@ -73,3 +73,28 @@ def db_insert_single_directory(file, file_code, fs_id, fs_host, fs_port):
 
 def db_get_directories(file):
     return directory_table().find({"file": file})
+
+
+"""
+Lock Server db helper
+"""
+def lock_table():
+    client = MongoClient("localhost", 27017)
+    return client['test-database'].get_collection('test-collection-locking')
+
+
+def db_lock(file_code, addr):
+    post = {
+        "file_code": file_code,
+        "server": addr
+    }
+    lock_table().insert_one(post)
+
+
+def db_unlock(file_code, addr):
+    lock_table().delete_one({"file_code": file_code, "server": addr})
+
+
+def db_is_locked(file_code, addr):
+    return directory_table().find({"file_code": file_code, "server": addr})
+

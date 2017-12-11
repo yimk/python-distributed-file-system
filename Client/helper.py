@@ -35,3 +35,6 @@ def decrypt(data, key):
 def generate_ticket():
     return 'tmp_pbk', 'tmp_pvk'
 
+def wait_for_while(timer):
+    from time import sleep
+    sleep(timer)

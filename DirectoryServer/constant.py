@@ -2,16 +2,18 @@
 LOCALHOST = "localhost"
 DIRECTORY_SERVER_HOST = LOCALHOST
 AUTHENTICATION_SERVER_HOST = LOCALHOST
+LOCK_SERVER_HOST = LOCALHOST
 
 FILE_SERVER_HOST = {}
 FILE_SERVER_HOST['0'] = LOCALHOST
-# FILE_SERVER_HOST['1'] = LOCALHOST
-# FILE_SERVER_HOST['2'] = LOCALHOST
-# FILE_SERVER_HOST['3'] = LOCALHOST
+FILE_SERVER_HOST['1'] = LOCALHOST
+FILE_SERVER_HOST['2'] = LOCALHOST
+FILE_SERVER_HOST['3'] = LOCALHOST
 
 # port
 DIRECTORY_SERVER_PORT = "5001"
 AUTHENTICATION_SERVER_PORT = "5002"
+LOCK_SERVER_PORT = "5003"
 
 FILE_SERVER_PORT = {}
 FILE_SERVER_PORT['0'] = "6001"
@@ -33,17 +35,35 @@ PRIVATE_KEY = "notsoez2HackThis"
 UPLOAD = "upload"
 DOWNLOAD = "download"
 TRANSACTION_UPLOAD = "upload-transaction"
+LOCK = "lock"
+UNLOCK = "unlock"
+EDIT = "edit"
 
 # gui properties
 UPLOAD_PARAM = " <upload-file-path> \n"
-DOWNLOAD_PARAM = " <download-file-name> <destination-path> \n"
-ASK_FOR_COMMAND = "Please enter one of the following:\n\n" + UPLOAD + UPLOAD_PARAM + TRANSACTION_UPLOAD + UPLOAD_PARAM + DOWNLOAD + DOWNLOAD_PARAM
+DOWNLOAD_PARAM = " <download-file-name>\n"
+LOCK_PARAM = " <file-name>\n"
+UNLOCK_PARAM = " <file-name>\n"
+EDIT_PARAM = " <file-name>\n"
+
+ASK_FOR_COMMAND = "Please enter one of the following:\n\n" + \
+                  UPLOAD + UPLOAD_PARAM + \
+                  TRANSACTION_UPLOAD + UPLOAD_PARAM + \
+                  DOWNLOAD + DOWNLOAD_PARAM + \
+                  EDIT + EDIT_PARAM + \
+                  LOCK + LOCK_PARAM + \
+                  UNLOCK + UNLOCK_PARAM
 
 # protocol
 DIRECTORY_SERVER_UPLOAD_DESTINATION_ASSIGNING_REQUEST = "http://{}:{}/user/upload-assign".format(LOCALHOST, DIRECTORY_SERVER_PORT)
 DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST = "http://{}:{}/user/download-assign".format(LOCALHOST, DIRECTORY_SERVER_PORT)
 AUTHENTICATION_SERVER_GET_TICKET_REQUEST = "http://{}:{}/user/get-ticket".format(AUTHENTICATION_SERVER_HOST, AUTHENTICATION_SERVER_PORT)
 # AUTHENTICATION_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST = "http://{}:{}/user/download-assign".format(AUTHENTICATION_SERVER_HOST, AUTHENTICATION_SERVER_PORT)
+LOCK_REQUEST = 'http://{}/user/lock'.format(LOCK_SERVER_HOST, LOCK_SERVER_HOST)
+UNLOCK_REQUEST = 'http://{}/user/unlock'.format(LOCK_SERVER_HOST, LOCK_SERVER_HOST)
+UPLOAD_FILE_REQUEST = 'http://{}/user/upload'
+DOWNLOAD_FILE_REQUEST = 'http://{}/user/download'
+
 
 # PUBLIC KEYS
 DIRECTORY_SERVER_PUBLIC_KEY = "4ThisIsARandomlyGenAESpublicKey4"
