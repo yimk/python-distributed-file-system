@@ -6,7 +6,7 @@ import helper
 
 app = Flask(__name__)
 
-@app.route('/user/get-ticket', methods=['POST'])
+@app.route('/user/authenticate', methods=['POST'])
 def generate_ticket():
 
     # retrieve essential information
@@ -69,6 +69,27 @@ def generate_ticket():
         encrypted_pvk = helper.encrypt(tmp_pvk, fs_pbk)
         security_check = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, fs_pbk)
         return jsonify({'client': encrypted_pbk, 'server': encrypted_pvk, 'ticket': security_check})
+
+
+@app.route('/user/register', methods=['POST'])
+def register():
+
+    # retrieve essential information
+    pbk = request.headers.get('pbk')
+
+    # register and get user id
+    id = helper.db_register(pbk)
+
+    # return user id
+    return jsonify({'id': id})
+
+
+def remove_expired_ticket():
+
+    pass
+
+
+
 
 
 
