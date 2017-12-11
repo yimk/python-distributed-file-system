@@ -2,6 +2,7 @@ import rest_messager
 import constant
 import os
 import helper
+import sys
 
 
 def handle_upload_command(directory):
@@ -83,23 +84,25 @@ def test():
 def run_client():
 
     register()
-    test()
+    
+    if sys.argv[1] == 'test-mode':
+        test()
+        sys.exit()
+    else:
+        command = input(constant.ASK_FOR_COMMAND)
+        param = command.split(' ').pop()
 
-
-    command = input(constant.ASK_FOR_COMMAND)
-    param = command.split(' ').pop()
-
-    handle_lock_command(param)
-    if command.startswith(constant.TRANSACTION_UPLOAD):
-        handle_upload_command(param)
-    elif command.startswith(constant.UPLOAD):
-        handle_upload_command(param)
-    elif command.startswith(constant.DOWNLOAD):
-        handle_download_command(param)
-    elif command.startswith(constant.LOCK):
         handle_lock_command(param)
-    elif command.startswith(constant.EDIT):
-        handle_edit_command(param)
+        if command.startswith(constant.TRANSACTION_UPLOAD):
+            handle_upload_command(param)
+        elif command.startswith(constant.UPLOAD):
+            handle_upload_command(param)
+        elif command.startswith(constant.DOWNLOAD):
+            handle_download_command(param)
+        elif command.startswith(constant.LOCK):
+            handle_lock_command(param)
+        elif command.startswith(constant.EDIT):
+            handle_edit_command(param)
 
 
 
