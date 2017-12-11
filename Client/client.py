@@ -12,8 +12,7 @@ def handle_upload_command(directory):
 
     # request communication helper to upload the data securely
     # based on pre-decided protocol
-    result = rest_messager.secure_upload(data, fname, constant.USER_ID)
-
+    result = rest_messager.secure_upload(data, fname)
 
 
 def handle_download_command(param):
@@ -23,12 +22,13 @@ def handle_download_command(param):
 
     # download the file
     # the file will be decrpyted by communication helper as this is part of the protocol
-    data = rest_messager.secure_download(target, constant.USER_ID)
+    data = rest_messager.secure_download(target)
 
     # write file to the destination
-    print("Data: \n" + data)
-    os.makedirs(os.getcwd() + "/tmp/")
-    open(os.getcwd() + "/tmp/" + target, 'wb').write(data)
+    print("Data: \n" + str(data))
+    if not os.path.exists(os.getcwd() + "/tmp_download/"):
+        os.makedirs(os.getcwd() + "/tmp_download/")
+    open(os.getcwd() + "/tmp_download/" + target, 'wb').write(data)
 
 
 def handle_lock_command(param):
@@ -36,26 +36,26 @@ def handle_lock_command(param):
     target = param
 
     # lock the file
-    rest_messager.lock_or_unlock(param, constant.USER_ID, True)
+    rest_messager.lock_or_unlock(param, True)
 
 
 def handle_unlock_command(param):
 
     # lock the file
-    rest_messager.lock_or_unlock(param, constant.USER_ID, False)
+    rest_messager.lock_or_unlock(param, False)
 
 
 def handle_edit_command(param):
 
     # download the file
-    data = rest_messager.secure_download(param, constant.USER_ID)
+    data = rest_messager.secure_download(param)
 
     # lock the file
     rest_messager.lock_or_unlock(param, True)
 
     # print data and ask user to update the file
-    print("Data: \n" + data + '\n')
-    update_data = input("Please enter the new data in the file")
+    print("Data: \n" + str(data) + '\n')
+    update_data = input("Please enter the new data in the file.\n")
 
     # unlock the file
     rest_messager.lock_or_unlock(param, False)
@@ -70,11 +70,18 @@ def register():
         id = rest_messager.register(pbk)
         helper.db_register(pvk, id)
 
+
+def test():
+    print("test-start")
+    # handle_upload_command(os.getcwd() + '/tmp/' + "MuseLog.txt")
+    # handle_download_command("MuseLog.txt")
+    handle_edit_command("MuseLog.txt")
+
 def run_client():
 
     register()
-    import os
-    handle_download_command("MuseLog.txt")
+    test()
+
 
     command = input(constant.ASK_FOR_COMMAND)
     param = command.split(' ').pop()

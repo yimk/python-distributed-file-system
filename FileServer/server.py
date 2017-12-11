@@ -31,7 +31,10 @@ def upload_file():
     tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.FILE_SERVER_PRIVATE_KEY[file_server_id])
     data = helper.decrypt(data, tmp_pvk)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
-    os.makedirs(os.getcwd() + "/tmp/")
+
+    # write the file
+    if not os.path.exists(os.getcwd() + "/tmp/"):
+        os.makedirs(os.getcwd() + "/tmp/")
     open(os.getcwd() + "/tmp/" + file_code, 'wb').write(data)
 
     # cache the file

@@ -96,5 +96,5 @@ def db_unlock(file_code, addr):
 
 
 def db_is_locked(file_code, addr):
-    return directory_table().find({"file_code": file_code, "server": addr})
+    return lock_table().find({"file_code": file_code, "server": addr})
 

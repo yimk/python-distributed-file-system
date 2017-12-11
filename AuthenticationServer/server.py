@@ -6,7 +6,8 @@ import helper
 
 app = Flask(__name__)
 
-@app.route('/user/authenticate', methods=['POST'])
+
+@app.route('/user/get-ticket', methods=['POST'])
 def generate_ticket():
 
     # retrieve essential information
@@ -85,14 +86,7 @@ def register():
 
 
 def remove_expired_ticket():
-
     pass
-
-
-
-
-
-
 
 
 if __name__ == '__main__':

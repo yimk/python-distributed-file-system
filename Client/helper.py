@@ -51,13 +51,13 @@ def registered():
     return registration_table().count() > 0
 
 
-def db_register(self, pvk, id):
+def db_register(pvk, id):
 
     post = {
         "pvk": pvk,
         "id": id
     }
-    self.registration_table().insert_one(post)
+    registration_table().insert_one(post)
 
 
 def db_get_registration_info():

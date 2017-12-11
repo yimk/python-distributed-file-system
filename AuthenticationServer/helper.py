@@ -50,23 +50,27 @@ def decrypt(data, key):
     return data
 
 
+def generate_ticket():
+    return 'tmp_pbk', 'tmp_pvk'
+
+
 def user_table():
     client = MongoClient("localhost", 27017)
     return client['test-database'].get_collection('test-collection-user')
 
 
-def db_register(self, pbk):
+def db_register(pbk):
 
-    id = user_table().count()
+    id = str(user_table().count())
     post = {
         "pbk": pbk,
         "id": id
     }
-    self.user_table().insert_one(post)
+    user_table().insert_one(post)
     return id
 
 
-def db_find_pbk(self, id):
-    return self.user_table().find({"id": id})['pbk']
+def db_find_pbk(id):
+    return user_table().find({"id": id})['pbk']
 
 
