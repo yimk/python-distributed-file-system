@@ -83,18 +83,19 @@ def lock_table():
     return client['test-database'].get_collection('test-collection-locking')
 
 
-def db_lock(file_code, addr):
+def db_lock(file_code, addr, uid):
     post = {
         "file_code": file_code,
-        "server": addr
+        "server": addr,
+        "uid": uid
     }
     lock_table().insert_one(post)
 
 
-def db_unlock(file_code, addr):
-    lock_table().delete_one({"file_code": file_code, "server": addr})
+def db_unlock(file_code, addr, uid):
+    lock_table().delete_one({"file_code": file_code, "server": addr, 'uid': uid})
 
 
-def db_is_locked(file_code, addr):
+def db_get_lock(file_code, addr):
     return lock_table().find({"file_code": file_code, "server": addr})
 

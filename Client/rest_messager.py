@@ -139,8 +139,9 @@ def secure_upload(data, fname):
 
             # decypt keys and ticket
             locked = helper.decrypt(json_data['locked'], client_tmp_pbk_for_locking_server)
+            locker = helper.decrypt(json_data['locker'], client_tmp_pbk_for_locking_server)
 
-            if not locked == 'True':
+            if not locked == 'True' and not locker == uid:
 
                 """
                 Send the file
@@ -305,8 +306,9 @@ def secure_download(fname):
 
             # decypt keys and ticket
             locked = helper.decrypt(json_data['locked'], client_tmp_pbk_for_locking_server)
+            locker = helper.decrypt(json_data['locker'], client_tmp_pbk_for_locking_server)
 
-            if not locked == 'True':
+            if not locked == 'True' and not locker == uid:
                 """
                 Download the file
                 """
@@ -455,6 +457,8 @@ def lock_or_unlock(fname, lock):
 
     print("Locking Successful. File is locked")
     return True
+
+
 
 """
 private

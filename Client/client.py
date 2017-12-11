@@ -47,11 +47,13 @@ def handle_unlock_command(param):
 
 def handle_edit_command(param):
 
+    # lock the file, during the locking, client is the only one that are able to download/upload the file
+    rest_messager.lock_or_unlock(param, True)
+
     # download the file
     data = rest_messager.secure_download(param)
 
-    # lock the file
-    rest_messager.lock_or_unlock(param, True)
+
 
     # print data and ask user to update the file
     print("Data: \n" + str(data) + '\n')
@@ -73,9 +75,10 @@ def register():
 
 def test():
     print("test-start")
-    # handle_upload_command(os.getcwd() + '/tmp/' + "MuseLog.txt")
-    # handle_download_command("MuseLog.txt")
+    handle_upload_command(os.getcwd() + '/tmp/' + "MuseLog.txt")
+    handle_download_command("MuseLog.txt")
     handle_edit_command("MuseLog.txt")
+    handle_download_command("MuseLog.txt")
 
 def run_client():
 
