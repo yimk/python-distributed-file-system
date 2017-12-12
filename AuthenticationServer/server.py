@@ -2,7 +2,7 @@ from flask import Flask
 from flask import jsonify
 from flask import request
 import helper
-import constant
+import config
 
 app = Flask(__name__)
 
@@ -14,22 +14,22 @@ def generate_ticket():
     user_id = request.headers.get('id')
     encrypted_server = request.headers.get('server')
     security_check = request.headers.get('security_check')
-    client_pbk = constant.CLIENT_PUBLIC_KEY[user_id]
+    client_pbk = config.CLIENT_PUBLIC_KEY[user_id]
 
     # find out the server public key based on the request
     server = helper.decrypt(encrypted_server, client_pbk)
     if server == "directory":
-        fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
+        fs_pbk = config.DIRECTORY_SERVER_PUBLIC_KEY
     elif server == "locking":
-        fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
+        fs_pbk = config.DIRECTORY_SERVER_PUBLIC_KEY
     elif server == "transaction":
-        fs_pbk = constant.DIRECTORY_SERVER_PUBLIC_KEY
+        fs_pbk = config.DIRECTORY_SERVER_PUBLIC_KEY
     else:
         # find file server id based on addr
         server = helper.decrypt(encrypted_server, client_pbk)
-        for key in constant.FILE_SERVER_PORT:
-            if server == constant.FILE_SERVER_HOST[key] + ':' + constant.FILE_SERVER_PORT[key]:
-                fs_pbk = constant.FILE_SERVER_PUBLIC_KEY[key]
+        for key in config.FILE_SERVER_PORT:
+            if server == config.FILE_SERVER_HOST[key] + ':' + config.FILE_SERVER_PORT[key]:
+                fs_pbk = config.FILE_SERVER_PUBLIC_KEY[key]
                 break
 
 
@@ -42,7 +42,7 @@ def generate_ticket():
     """
     security_check = helper.decrypt(security_check, client_pbk)
 
-    if not security_check == constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if not security_check == config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         # client didn't encrypt auth server's public key with it's private key
         # Hence, the client could be man-in-middle
         # Hence reject the request
@@ -68,7 +68,7 @@ def generate_ticket():
         (tmp_pbk, tmp_pvk) = helper.generate_ticket()
         encrypted_pbk = helper.encrypt(tmp_pbk, client_pbk)
         encrypted_pvk = helper.encrypt(tmp_pvk, fs_pbk)
-        security_check = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, fs_pbk)
+        security_check = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, fs_pbk)
         return jsonify({'client': encrypted_pbk, 'server': encrypted_pvk, 'ticket': security_check})
 
 
@@ -76,7 +76,7 @@ def generate_ticket():
 def register():
 
     # retrieve essential information
-    pbk = request.headers.get('pbk')
+    pbk = helper.decrypt(request.headers.get('pbk'), config.AUTHENTICATION_SERVER_PRIVATE_KEY)
 
     # register and get user id
     id = helper.db_register(pbk)

@@ -3,15 +3,15 @@ import json
 import requests
 import helper
 
-import constant
+import config
 
 
 directory_cache = {}
 
 
 def register(pbk):
-    headers = {'pbk': pbk}
-    response = requests.post(constant.AUTHENTICATION_SERVER_REGISTER_REQUEST, data=json.dumps(""),
+    headers = {'pbk': helper.encrypt(pbk, config.AUTHENTICATION_SERVER_PUBLIC_KEY)}
+    response = requests.post(config.AUTHENTICATION_SERVER_REGISTER_REQUEST, data=json.dumps(""),
                              headers=headers)
 
     return json.loads(response.text)['id']
@@ -44,9 +44,9 @@ def secure_upload(data, fname):
         """
         # get ticket
         directory_server = helper.encrypt("directory", client_private_key)
-        encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+        encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
         headers = {'id': uid, 'server': directory_server, 'security_check': encrypted_auth_server_pbk}
-        response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
+        response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
                                  headers=headers)
 
         # parse respones data
@@ -74,7 +74,7 @@ def secure_upload(data, fname):
         secure_fname = helper.encrypt(fname, client_tmp_pbk_for_directory_server)
 
         headers = {'id': uid, 'filename': secure_fname, 'access_key': encrpyted_directory_sever_tmp_pvk, 'ticket': ticket}
-        response = requests.post(constant.DIRECTORY_SERVER_UPLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
+        response = requests.post(config.DIRECTORY_SERVER_UPLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
                                 headers=headers)
 
         # parse respones data
@@ -113,9 +113,9 @@ def secure_upload(data, fname):
             """
 
             # get ticket from auth server
-            encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+            encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
             headers = {'id': uid, 'server': 'locking', 'security_check': encrypted_auth_server_pbk}
-            response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+            response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                      headers=headers)
 
             # parse respones data
@@ -131,7 +131,7 @@ def secure_upload(data, fname):
             """
             # check if the file has been locked
             headers = {'id': uid, 'server': secure_file_server, 'security_check': ticket, 'access_key': sever_tmp_pvk, 'ticket': ticket}
-            response = requests.post(constant.ISLOCK_REQUEST, data=json.dumps({}),
+            response = requests.post(config.ISLOCK_REQUEST, data=json.dumps({}),
                                      headers=headers)
 
             # parse respones data
@@ -151,9 +151,9 @@ def secure_upload(data, fname):
                 Communicating with Authentication Server, get ticket for file uploading:
                 """
                 # get ticket from auth server
-                encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+                encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
                 headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
-                response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+                response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                     headers=headers)
 
                 # parse respones data
@@ -173,7 +173,7 @@ def secure_upload(data, fname):
 
                 # send the file
                 headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
-                response = requests.post(constant.UPLOAD_FILE_REQUEST.format(destination), data=secure_data,
+                response = requests.post(config.UPLOAD_FILE_REQUEST.format(destination), data=secure_data,
                                          headers=headers)
 
                 return True
@@ -210,9 +210,9 @@ def secure_download(fname):
 
         # get ticket
         directory_server = helper.encrypt("directory", client_private_key)
-        encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+        encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
         headers = {'id': uid, 'server': directory_server, 'security_check': encrypted_auth_server_pbk}
-        response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+        response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                  headers=headers)
 
         # parse respones data
@@ -240,7 +240,7 @@ def secure_download(fname):
         secure_fname = helper.encrypt(fname, client_tmp_pbk_for_directory_server)
 
         headers = {'id': uid, 'filename': secure_fname, 'access_key': encrpyted_directory_sever_tmp_pvk, 'ticket': ticket}
-        response = requests.post(constant.DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
+        response = requests.post(config.DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
                                  headers=headers)
 
         # parse respones data
@@ -279,9 +279,9 @@ def secure_download(fname):
 
             # get ticket from auth server
 
-            encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+            encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
             headers = {'id': uid, 'server': 'locking', 'security_check': encrypted_auth_server_pbk}
-            response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+            response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                      headers=headers)
 
             # parse respones data
@@ -298,7 +298,7 @@ def secure_download(fname):
             # check if the file has been locked
             secure_file_server = helper.encrypt(directory, client_private_key)
             headers = {'id': uid, 'server': secure_file_server, 'security_check': ticket, 'access_key': sever_tmp_pvk}
-            response = requests.post(constant.ISLOCK_REQUEST, data=json.dumps({}),
+            response = requests.post(config.ISLOCK_REQUEST, data=json.dumps({}),
                                      headers=headers)
 
             # parse respones data
@@ -318,9 +318,9 @@ def secure_download(fname):
                 """
                 # get ticket from auth server
                 secure_file_server = helper.encrypt(directory, client_private_key)
-                encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+                encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
                 headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
-                response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+                response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                          headers=headers)
 
                 # parse respones data
@@ -339,7 +339,7 @@ def secure_download(fname):
                 """
                 # download the file
                 headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
-                response = requests.post(constant.DOWNLOAD_FILE_REQUEST.format(directory), data=json.dumps({}),
+                response = requests.post(config.DOWNLOAD_FILE_REQUEST.format(directory), data=json.dumps({}),
                                          headers=headers)
 
                 # return the file
@@ -374,9 +374,9 @@ def lock_or_unlock(fname, lock):
 
     # authenticate client to get access to the directory server
     directory_server = helper.encrypt("directory", client_private_key)
-    encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+    encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
     headers = {'id': uid, 'server': directory_server, 'security_check': encrypted_auth_server_pbk}
-    response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
+    response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps(""),
                              headers=headers)
 
     # parse respones data
@@ -404,7 +404,7 @@ def lock_or_unlock(fname, lock):
     secure_fname = helper.encrypt(fname, client_tmp_pbk_for_directory_server)
 
     headers = {'id': uid, 'filename': secure_fname, 'access_key': encrpyted_directory_sever_tmp_pvk, 'ticket': ticket}
-    response = requests.post(constant.DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
+    response = requests.post(config.DIRECTORY_SERVER_DOWNLOAD_DESTINATION_ASSIGNING_REQUEST, data=json.dumps({}),
                              headers=headers)
 
     # parse respones data
@@ -425,9 +425,9 @@ def lock_or_unlock(fname, lock):
 
         # get ticket from auth server
         secure_file_server = helper.encrypt(directory, client_private_key)
-        encrypted_auth_server_pbk = helper.encrypt(constant.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+        encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
         headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
-        response = requests.post(constant.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+        response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                  headers=headers)
 
         # parse respones data
@@ -445,14 +445,14 @@ def lock_or_unlock(fname, lock):
         headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
 
         if lock:
-            response = requests.post(constant.LOCK_REQUEST.format(directory), data=json.dumps({}),
+            response = requests.post(config.LOCK_REQUEST.format(directory), data=json.dumps({}),
                                      headers=headers)
 
             if json.loads(response.text)['result'] == 'failed':
                 print("Locking Failed. File is already locked")
                 return False
         else:
-            response = requests.post(constant.UNLOCK_REQUEST.format(directory), data=json.dumps({}),
+            response = requests.post(config.UNLOCK_REQUEST.format(directory), data=json.dumps({}),
                                      headers=headers)
 
     print("Locking Successful. File is locked")

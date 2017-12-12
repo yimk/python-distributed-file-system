@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
-import constant
+import config
 import os
 import sys
 
@@ -24,11 +24,11 @@ def upload_file():
     ticket = request.headers.get('ticket')
 
     # validate the ticket
-    if helper.decrypt(ticket, constant.FILE_SERVER_PRIVATE_KEY[file_server_id]) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.FILE_SERVER_PRIVATE_KEY[file_server_id]) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the data and write the file
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.FILE_SERVER_PRIVATE_KEY[file_server_id])
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.FILE_SERVER_PRIVATE_KEY[file_server_id])
     data = helper.decrypt(data, tmp_pvk)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
 
@@ -52,12 +52,12 @@ def download_file():
     ticket = request.headers.get('ticket')
 
     # validate the ticket
-    if helper.decrypt(ticket, constant.FILE_SERVER_PRIVATE_KEY[file_server_id]) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.FILE_SERVER_PRIVATE_KEY[file_server_id]) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
 
     # decrypt the essentail information
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.FILE_SERVER_PRIVATE_KEY[file_server_id])
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.FILE_SERVER_PRIVATE_KEY[file_server_id])
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
 
     if file_code not in data_cache:

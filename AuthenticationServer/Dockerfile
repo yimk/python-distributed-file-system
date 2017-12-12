@@ -8,4 +8,4 @@ RUN pip install base64
 RUN pip install json
 RUN pip install requests
 
-CMD [ "python", "./client.py" ]
+CMD [ "python", "./server.py" ]

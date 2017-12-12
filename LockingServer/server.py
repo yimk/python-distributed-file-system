@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
-import constant
+import config
 
 import helper
 
@@ -21,12 +21,12 @@ def lock():
     ticket = request.headers.get('ticket')
 
     # validate the ticket and fail the request if validation failed, this ensure the client is authorized by auth server
-    if helper.decrypt(ticket, constant.LOCK_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.LOCK_SERVER_PRIVATE_KEY) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the encrypted_key with the temporary public key
     # this helps client to ensure we are the right directory server, not man-in-middle
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.LOCK_SERVER_PRIVATE_KEY)
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.LOCK_SERVER_PRIVATE_KEY)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
 
@@ -52,12 +52,12 @@ def unlock():
     ticket = request.headers.get('ticket')
 
     # validate the ticket and fail the request if validation failed, this ensure the client is authorized by auth server
-    if helper.decrypt(ticket, constant.LOCK_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.LOCK_SERVER_PRIVATE_KEY) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the encrypted_key with the temporary public key
     # this helps client to ensure we are the right directory server, not man-in-middle
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.LOCK_SERVER_PRIVATE_KEY)
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.LOCK_SERVER_PRIVATE_KEY)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
 
@@ -79,12 +79,12 @@ def is_locked():
     ticket = request.headers.get('security_check')
 
     # validate the ticket and fail the request if validation failed, this ensure the client is authorized by auth server
-    if helper.decrypt(ticket, constant.LOCK_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.LOCK_SERVER_PRIVATE_KEY) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the encrypted_key with the temporary public key
     # this helps client to ensure we are the right directory server, not man-in-middle
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.LOCK_SERVER_PRIVATE_KEY)
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.LOCK_SERVER_PRIVATE_KEY)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
 

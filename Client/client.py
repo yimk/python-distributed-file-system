@@ -1,5 +1,5 @@
 import rest_messager
-import constant
+import config
 import os
 import helper
 import sys
@@ -89,19 +89,19 @@ def run_client():
         test()
         sys.exit()
     else:
-        command = input(constant.ASK_FOR_COMMAND)
+        command = input(config.ASK_FOR_COMMAND)
         param = command.split(' ').pop()
 
         handle_lock_command(param)
-        if command.startswith(constant.TRANSACTION_UPLOAD):
+        if command.startswith(config.TRANSACTION_UPLOAD):
             handle_upload_command(param)
-        elif command.startswith(constant.UPLOAD):
+        elif command.startswith(config.UPLOAD):
             handle_upload_command(param)
-        elif command.startswith(constant.DOWNLOAD):
+        elif command.startswith(config.DOWNLOAD):
             handle_download_command(param)
-        elif command.startswith(constant.LOCK):
+        elif command.startswith(config.LOCK):
             handle_lock_command(param)
-        elif command.startswith(constant.EDIT):
+        elif command.startswith(config.EDIT):
             handle_edit_command(param)
 
 

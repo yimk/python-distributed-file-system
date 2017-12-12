@@ -1,7 +1,7 @@
 from flask import Flask
 from flask import jsonify
 from flask import request
-import constant
+import config
 
 import helper
 
@@ -20,12 +20,12 @@ def assign_upload_directory():
     ticket = request.headers.get('ticket')
 
     # validate the ticket and fail the request if validation failed, this ensure the client is authorized by auth server
-    if helper.decrypt(ticket, constant.DIRECTORY_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.DIRECTORY_SERVER_PRIVATE_KEY) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the encrypted_key with the temporary public key
     # this helps client to ensure we are the right directory server, not man-in-middle
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.DIRECTORY_SERVER_PRIVATE_KEY)
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.DIRECTORY_SERVER_PRIVATE_KEY)
     file_name = helper.decrypt(encrypted_file_name, tmp_pvk)
 
     """
@@ -48,13 +48,13 @@ def assign_upload_directory():
 
         # generate the diretory list and add them to record
         encrypted_destinations = []
-        for i in constant.FILE_SERVER_PORT:
+        for i in config.FILE_SERVER_PORT:
 
             # add the directory record into db
-            helper.db_insert_single_directory(file_name, file_code, i, constant.FILE_SERVER_HOST[i], constant.FILE_SERVER_PORT[i])
+            helper.db_insert_single_directory(file_name, file_code, i, config.FILE_SERVER_HOST[i], config.FILE_SERVER_PORT[i])
 
             # append encrypted directories to the returning list
-            destination = constant.FILE_SERVER_HOST[i] + ":" + constant.FILE_SERVER_PORT[i]
+            destination = config.FILE_SERVER_HOST[i] + ":" + config.FILE_SERVER_PORT[i]
             encrypted_destination = helper.encrypt(destination, tmp_pvk)
             encrypted_destinations.append(encrypted_destination)
 
@@ -73,12 +73,12 @@ def assign_download_directory():
     ticket = request.headers.get('ticket')
 
     # validate the ticket and fail the request if validation failed, this ensure the client is authorized by auth server
-    if helper.decrypt(ticket, constant.DIRECTORY_SERVER_PRIVATE_KEY) != constant.AUTHENTICATION_SERVER_PUBLIC_KEY:
+    if helper.decrypt(ticket, config.DIRECTORY_SERVER_PRIVATE_KEY) != config.AUTHENTICATION_SERVER_PUBLIC_KEY:
         return None
 
     # decrypt the encrypted_key with the directory server's public key
     # this helps client to ensure we are the right directory server, not man-in-middle
-    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, constant.DIRECTORY_SERVER_PRIVATE_KEY)
+    tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.DIRECTORY_SERVER_PRIVATE_KEY)
     file_name = helper.decrypt(encrypted_file_name, tmp_pvk)
 
     """
