@@ -8,12 +8,13 @@ The client provides the following services:
   - Download: Download the file from the distributed file system
   - Lock: Lock the file
   - Unlock the file
-  - Edit: - The file will be first be locked by the client
-          - No other person but client can access the file
-          - Client will then download the file and display it to user
-          - Client will ask user to enter the new data of the file
-          - Client will upload the new data(edit the file)
-          - Client will then unlock the file
+  - Edit: 
+    - The file will be first be locked by the client
+    - No other person but client can access the file
+    - Client will then download the file and display it to user
+    - Client will ask user to enter the new data of the file
+    - Client will upload the new data(edit the file)
+    - Client will then unlock the file
           
  ## Security Service
  
@@ -47,6 +48,15 @@ The client provides the following services:
   - I choose 2, as we can have unlimited number of client and always have limited number of file server. By doing that, we minimize the traffic between the servers.
 
 ## Locking
+- The Locking server enables client to lock a file in a given file server. When the file is locked, no person but the client who lock the file can access the file. The client will also be the only person that are able to unlock the file.
+
+## Caching
+I implemented caching in
+  - File Server: The file server will keep the data of maximum of 50 files in the memory. This optimise the speed of for the file server to read the file.
+  - Client: The client will keep the directories of maximum of 50 files in the memory. This reduces the traffic of the system as client do not have to communicate with the directory server as much as before.
+  
+  
+# Run the application
 
   
   
