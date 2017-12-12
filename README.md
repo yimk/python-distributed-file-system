@@ -22,7 +22,7 @@ The client provides the following services:
  - When client starts, it will first check if it is signed up(on the distributed file system).
  - If not, it will register itself. It will generate a private key and public key pair. 
      - Private Key: Client will keep the private key. 
-     - Public Key: Client will encrypt it with the authentication server's public key and send the encrypted public key to client. 
+     - Public Key: Client will encrypt it with the authentication server's public key and send the encrypted public key to client. This ensures man-in-middle will not be able to pretend to be the auth server.
      In here, we assume the client must know authentication server's public key to register.
  - The authentication server will keep the public key of the client and assign client an user_id.
  - When client trying to acccess file_server, lock_serve or directory server, it will:
@@ -31,6 +31,7 @@ The client provides the following services:
     - temporary public key will be used by the client(client be need to decrypt it with it's private key as it is encrypted by authentication server with it's public key)
     - temporary private key will be used by the target server(target server be need to decrypt it with it's private key as it is encrypted by authentication server with it's public key)
     - when the client and target server are transferring sensitive information. They will encrypt the data with the temporary key first
+    - This ensures man-in-middle will not be able to pretend to be the target server and steal sensitive information, especially when the client is trying to  transfer data to file server
 
 ## Directory Service
   - Uploading: when user upload a file, it will first communicate with the directory server. The directory server will returns back the address of the assigned file server and the file code of the file. 
