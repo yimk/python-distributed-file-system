@@ -1,0 +1,52 @@
+# Distributed File System (Python)
+
+## Client Service
+
+The client provides the following services:
+
+  - Upload: Upload files and distribute(replicate) the target file across the distributed file system
+  - Download: Download the file from the distributed file system
+  - Lock: Lock the file
+  - Unlock the file
+  - Edit: - The file will be first be locked by the client
+          - No other person but client can access the file
+          - Client will then download the file and display it to user
+          - Client will ask user to enter the new data of the file
+          - Client will upload the new data(edit the file)
+          - Client will then unlock the file
+          
+ ## Security Service
+ 
+ - The security service follows the keberos pattern
+ - When client starts, it will first check if it is signed up(on the distributed file system).
+ - If not, it will register itself. It will generate a private key and public key pair. 
+     - Private Key: Client will keep the private key. 
+     - Public Key: Client will encrypt it with the authentication server's public key and send the encrypted public key to client. 
+     In here, we assume the client must know authentication server's public key to register.
+ - The authentication server will keep the public key of the client and assign client an user_id.
+ - When client trying to acccess file_server, lock_serve or directory server, it will:
+    - send the encrypted address of the target server to the authentication server(encrypted by it's public key)
+    - authentication server will then decrypt it and if it works, it will send back a temporary public key and temporary private key to the client.
+    - temporary public key will be used by the client(client be need to decrypt it with it's private key as it is encrypted by authentication server with it's public key)
+    - temporary private key will be used by the target server(target server be need to decrypt it with it's private key as it is encrypted by authentication server with it's public key)
+    - when the client and target server are transferring sensitive information. They will encrypt the data with the temporary key first
+
+## Directory Service
+  - Uploading: when user upload a file, it will first communicate with the directory server. The directory server will returns back the address of the assigned file server and the file code of the file. 
+  The file will be stored as file code in the file server. This makes the system scalable.
+  
+  - Downloading: when user wants to download the file, it will communicate with the directory server. The directory server will returns back the address of the assigned file server and the file code of the file.
+  The client will then download the file from one of the file server available.
+  
+## Replication
+  - When client is uploading the file. Instead of uploading the file to one file server, we will distribute the replications of the file across the system.(In here, every file server will have a copy)
+  This makes the system fault tolerant, e.g when one file server crash, client will be able to get the file from another file server.
+  - There are two options when we do replication:
+    1. client upload the file to one of the file server and the file server distributes it
+    2. client send the copy of the file to a number of file server
+  - I choose 2, as we can have unlimited number of client and always have limited number of file server. By doing that, we minimize the traffic between the servers.
+
+## Locking
+
+  
+  
