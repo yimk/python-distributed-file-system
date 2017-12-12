@@ -98,4 +98,4 @@ def is_locked():
     return jsonify({'locked': helper.encrypt(locked, tmp_pvk), 'locker': helper.encrypt(locker, tmp_pvk)})
 
 if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False, port=constant.LOCK_SERVER_PORT)
+    app.run(host="0.0.0.0", debug=True)

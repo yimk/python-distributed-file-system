@@ -1,0 +1,39 @@
+
+authserver:
+  image: authserver
+  environment:
+    - MONGODB_IP=database
+  env_file: ../all_env.env
+
+  command:  /usr/local/bin/auth-server-exe
+  ports:
+    -  "${AUTHSERV_PORT}:${AUTHSERV_PORT}"
+  links:
+    - database
+  container_name: authserver
+   
+database:
+   
+  image: mongo:3.0.2
+  ports:
+    - "27000:27017"
+
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: yimk/authserver:latest
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+networks:
+  webnet:

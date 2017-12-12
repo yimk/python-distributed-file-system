@@ -82,5 +82,5 @@ def cache_data(file_code, data):
 
 
 if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False, port=constant.FILE_SERVER_PORT[file_server_id])
+    app.run(host="0.0.0.0", debug=True)
 

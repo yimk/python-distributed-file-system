@@ -1,8 +1,8 @@
-import constant
 from flask import Flask
 from flask import jsonify
 from flask import request
 import helper
+import constant
 
 app = Flask(__name__)
 
@@ -90,5 +90,5 @@ def remove_expired_ticket():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False, port=constant.AUTHENTICATION_SERVER_PORT)
+    app.run(host="0.0.0.0", debug=True)
 
