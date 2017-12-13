@@ -29,7 +29,7 @@ def handle_download_command(param):
     print("Data: \n" + str(data))
     if not os.path.exists(os.getcwd() + "/tmp_download/"):
         os.makedirs(os.getcwd() + "/tmp_download/")
-    open(os.getcwd() + "/tmp_download/" + target, 'wb').write(data)
+    open(os.getcwd() + "/tmp_download" + "_file_server_id/" + target, 'wb').write(data)
 
 
 def handle_lock_command(param):
@@ -76,7 +76,7 @@ def register():
 
 def test():
     print("test-start")
-    handle_upload_command(os.getcwd() + '/tmp/' + "MuseLog.txt")
+    handle_upload_command(os.getcwd() + "/tmp" + "_file_server_id/" + "MuseLog.txt")
     handle_download_command("MuseLog.txt")
     handle_edit_command("MuseLog.txt")
     handle_download_command("MuseLog.txt")

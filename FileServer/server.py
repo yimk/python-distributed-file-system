@@ -35,7 +35,7 @@ def upload_file():
     # write the file
     if not os.path.exists(os.getcwd() + "/tmp/"):
         os.makedirs(os.getcwd() + "/tmp/")
-    open(os.getcwd() + "/tmp/" + file_code, 'wb').write(data)
+    open(os.getcwd() + "/tmp" + "_file_server_id/" + file_code, 'wb').write(data)
 
     # cache the file
     cache_data(file_code, data)
@@ -64,7 +64,7 @@ def download_file():
         data = data_cache[file_code]
     else:
         # read the file
-        data = open(os.getcwd() + "/tmp/" + file_code, 'rb').read()
+        data = open(os.getcwd() + "/tmp" + "_file_server_id/" + file_code, 'rb').read()
 
         # cache the file
         cache_data(file_code, data)
