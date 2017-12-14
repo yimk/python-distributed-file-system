@@ -97,7 +97,7 @@ def secure_upload(data, fname):
         encrypted_upload_destinations = directory_cache[fname][1]
         client_tmp_pbk_for_directory_server = directory_cache[fname][2]
 
-
+    print(encrypted_upload_destinations)
     """
     Start to upload the file
     """
@@ -141,47 +141,51 @@ def secure_upload(data, fname):
             locked = helper.decrypt(json_data['locked'], client_tmp_pbk_for_locking_server)
             locker = helper.decrypt(json_data['locker'], client_tmp_pbk_for_locking_server)
 
-            if not locked == 'True' and not locker == uid:
+            if locked == 'True' and not locker == uid:
+                break
 
-                """
-                Send the file
-                """
+            """
+            Send the file
+            """
 
-                """
-                Communicating with Authentication Server, get ticket for file uploading:
-                """
-                # get ticket from auth server
-                encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
-                headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
-                response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
-                                    headers=headers)
+            """
+            Communicating with Authentication Server, get ticket for file uploading:
+            """
+            # get ticket from auth server
+            encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+            headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
+            response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
+                                headers=headers)
 
-                # parse respones data
-                json_data = json.loads(response.text)
+            # parse respones data
+            json_data = json.loads(response.text)
 
-                # decypt keys and ticket
-                fs_tmp_pvk = json_data['server']
-                ticket = json_data['ticket']
-                client_tmp_pbk = helper.encrypt(json_data['client'], client_private_key)
+            # decypt keys and ticket
+            fs_tmp_pvk = json_data['server']
+            ticket = json_data['ticket']
+            client_tmp_pbk = helper.encrypt(json_data['client'], client_private_key)
 
-                """
-                Upload the file
-                """
-                # encrypt data with client tmp public key
-                secure_data = helper.encrypt(data, client_tmp_pbk)
-                secure_file_code = helper.encrypt(file_code, client_tmp_pbk)
+            """
+            Upload the file
+            """
+            # encrypt data with client tmp public key
+            secure_data = helper.encrypt(data, client_tmp_pbk)
+            secure_file_code = helper.encrypt(file_code, client_tmp_pbk)
 
-                # send the file
-                headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
-                response = requests.post(config.UPLOAD_FILE_REQUEST.format(destination), data=secure_data,
-                                         headers=headers)
+            # send the file
+            headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
+            response = requests.post(config.UPLOAD_FILE_REQUEST.format(destination), data=secure_data,
+                                     headers=headers)
 
+            if encrypted_destination == encrypted_upload_destinations[-1]:
                 return True
 
         """
         if all the destination are locked, then the file must be locked, wait for 5 minute and try again
         """
+        print("File is locked. Upload will restart after 5 minutes. It you do not want to wait, you can terminate the application by pressing ctrl+c.")
         helper.wait_for_while(300)
+        print("Upload restart.")
 
 def secure_download(fname):
 
@@ -308,7 +312,7 @@ def secure_download(fname):
             locked = helper.decrypt(json_data['locked'], client_tmp_pbk_for_locking_server)
             locker = helper.decrypt(json_data['locker'], client_tmp_pbk_for_locking_server)
 
-            if not locked == 'True' and not locker == uid:
+            if not locked == 'True' or locker == uid:
                 """
                 Download the file
                 """
@@ -350,7 +354,9 @@ def secure_download(fname):
         """
         if all the destination are locked, then the file must be locked, wait for 5 minute and try again
         """
+        print("File is locked. Download will restart after 5 minutes. It you do not want to wait, you can terminate the application by pressing ctrl+c.")
         helper.wait_for_while(300)
+        print("Upload restart.")
 
 
 def lock_or_unlock(fname, lock):
@@ -418,45 +424,60 @@ def lock_or_unlock(fname, lock):
     """
     Communicating with Authentication Server, get ticket and lock the file:
     """
-    for directory in encrypted_download_directories:
 
-        # decrypt the destination
-        directory = helper.decrypt(directory, client_tmp_pbk_for_directory_server)
 
-        # get ticket from auth server
-        secure_file_server = helper.encrypt(directory, client_private_key)
-        encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
-        headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
-        response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
-                                 headers=headers)
+    while True:
+        for encrypted_directory in encrypted_download_directories:
 
-        # parse respones data
-        json_data = json.loads(response.text)
+            # decrypt the destination
+            directory = helper.decrypt(encrypted_directory, client_tmp_pbk_for_directory_server)
 
-        # decypt keys and ticket
-        fs_tmp_pvk = json_data['server']
-        ticket = json_data['ticket']
-        client_tmp_pbk_for_file_server = helper.encrypt(json_data['client'], client_private_key)
-
-        # encrypt data with client tmp public key
-        secure_file_code = helper.encrypt(file_code, client_tmp_pbk_for_file_server)
-
-        # send the file
-        headers = {'id': uid, 'file_code': secure_file_code, 'access_key': fs_tmp_pvk, 'ticket': ticket}
-
-        if lock:
-            response = requests.post(config.LOCK_REQUEST.format(directory), data=json.dumps({}),
+            # get ticket from auth server
+            secure_file_server = helper.encrypt(directory, client_private_key)
+            encrypted_auth_server_pbk = helper.encrypt(config.AUTHENTICATION_SERVER_PUBLIC_KEY, client_private_key)
+            headers = {'id': uid, 'server': secure_file_server, 'security_check': encrypted_auth_server_pbk}
+            response = requests.post(config.AUTHENTICATION_SERVER_GET_TICKET_REQUEST, data=json.dumps({}),
                                      headers=headers)
 
-            if json.loads(response.text)['result'] == 'failed':
-                print("Locking Failed. File is already locked")
-                return False
-        else:
-            response = requests.post(config.UNLOCK_REQUEST.format(directory), data=json.dumps({}),
-                                     headers=headers)
+            # parse respones data
+            json_data = json.loads(response.text)
 
-    print("Locking Successful. File is locked")
-    return True
+            # decypt keys and ticket
+            fs_tmp_pvk = json_data['server']
+            ticket = json_data['ticket']
+            client_tmp_pbk_for_file_server = helper.encrypt(json_data['client'], client_private_key)
+
+            # encrypt data with client tmp public key
+            secure_file_code = helper.encrypt(file_code, client_tmp_pbk_for_file_server)
+            secure_directory = helper.encrypt(directory, client_tmp_pbk_for_file_server)
+
+            # send the file
+            headers = {'id': uid, 'file_code': secure_file_code, 'server': secure_directory, 'access_key': fs_tmp_pvk, 'ticket': ticket}
+
+            if lock:
+                response = requests.post(config.LOCK_REQUEST.format(directory), data=json.dumps({}),
+                                         headers=headers)
+
+                if json.loads(response.text)['result'] == 'failed':
+                    print("Locking Failed. Locking will restart after 5 minutes. It you do not want to wait, you can terminate the application by pressing ctrl+c.")
+                    helper.wait_for_while(300)
+                    print("Locking restart.")
+                    break
+
+            else:
+                response = requests.post(config.UNLOCK_REQUEST.format(directory), data=json.dumps({}),
+                                         headers=headers)
+
+                print(json.loads(response.text))
+                if json.loads(response.text)['result'] == 'failed':
+                    print("Unocking Failed. Locking will restart after 5 minutes. It you do not want to wait, you can terminate the application by pressing ctrl+c.")
+                    helper.wait_for_while(300)
+                    print("Unocking restart.")
+                    break
+
+            if encrypted_directory == encrypted_download_directories[-1]:
+                print("Locking Successful. File is locked")
+                return True
 
 
 

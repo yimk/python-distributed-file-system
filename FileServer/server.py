@@ -33,14 +33,14 @@ def upload_file():
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
 
     # write the file
-    if not os.path.exists(os.getcwd() + "/tmp/"):
-        os.makedirs(os.getcwd() + "/tmp/")
-    open(os.getcwd() + "/tmp" + "_file_server_id/" + file_code, 'wb').write(data)
+    if not os.path.exists(os.getcwd() + "/tmp" + "_" + file_server_id + "/"):
+        os.makedirs(os.getcwd() + "/tmp" + "_" + file_server_id + "/")
+    open(os.getcwd() + "/tmp" + "_" + file_server_id + "/" + file_code, 'wb').write(data)
 
     # cache the file
     cache_data(file_code, data)
 
-    return jsonify({'result:' 'success'})
+    return jsonify({'result': 'success'})
 
 @app.route('/user/download', methods=['POST'])
 def download_file():
@@ -64,7 +64,7 @@ def download_file():
         data = data_cache[file_code]
     else:
         # read the file
-        data = open(os.getcwd() + "/tmp" + "_file_server_id/" + file_code, 'rb').read()
+        data = open(os.getcwd() + "/tmp" + "_" + file_server_id + "/" + file_code, 'rb').read()
 
         # cache the file
         cache_data(file_code, data)
@@ -82,5 +82,5 @@ def cache_data(file_code, data):
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=int(config.FILE_SERVER_PORT[file_server_id]))
 

@@ -4,6 +4,8 @@ import os
 import helper
 import sys
 
+from future.builtins import input
+
 
 def handle_upload_command(directory):
 
@@ -27,9 +29,9 @@ def handle_download_command(param):
 
     # write file to the destination
     print("Data: \n" + str(data))
-    if not os.path.exists(os.getcwd() + "/tmp_download/"):
-        os.makedirs(os.getcwd() + "/tmp_download/")
-    open(os.getcwd() + "/tmp_download" + "_file_server_id/" + target, 'wb').write(data)
+    if not os.path.exists(os.getcwd() + "/tmp_download_client/"):
+        os.makedirs(os.getcwd() + "/tmp_download_client/")
+    open(os.getcwd() + "/tmp_download_client/"  + target, 'wb').write(data)
 
 
 def handle_lock_command(param):
@@ -37,13 +39,13 @@ def handle_lock_command(param):
     target = param
 
     # lock the file
-    rest_messager.lock_or_unlock(param, True)
+    return rest_messager.lock_or_unlock(param, True)
 
 
 def handle_unlock_command(param):
 
     # lock the file
-    rest_messager.lock_or_unlock(param, False)
+    return rest_messager.lock_or_unlock(param, False)
 
 
 def handle_edit_command(param):
@@ -53,8 +55,6 @@ def handle_edit_command(param):
 
     # download the file
     data = rest_messager.secure_download(param)
-
-
 
     # print data and ask user to update the file
     print("Data: \n" + str(data) + '\n')
@@ -69,6 +69,7 @@ def handle_edit_command(param):
 
 def register():
     if not helper.registered():
+        print("Register Client.\n")
         pbk, pvk = helper.generate_ticket()
         id = rest_messager.register(pbk)
         helper.db_register(pvk, id)
@@ -76,16 +77,29 @@ def register():
 
 def test():
     print("test-start")
-    handle_upload_command(os.getcwd() + "/tmp" + "_file_server_id/" + "MuseLog.txt")
+
+    print("Test Uploading")
+    handle_upload_command(os.getcwd() + "/Client/tmp/" + "MuseLog.txt")
+
+    print("Test Downloading")
     handle_download_command("MuseLog.txt")
+
+    print("Test Editing, Along with Locking")
     handle_edit_command("MuseLog.txt")
+
+    print("Test Downloading Again. Test if editing is successful")
     handle_download_command("MuseLog.txt")
 
 def run_client():
 
+    from pymongo import MongoClient
+    client = MongoClient("localhost", 27017)
+    table =  client['test-database'].get_collection('test-collection-locking').find({})
+    print(list(table))
     register()
     
-    if sys.argv[1] == 'test-mode':
+    if  len(sys.argv) >= 2 and sys.argv[1] == 'test-mode':
+        print("Run Client in Test Mode.\n")
         test()
         sys.exit()
     else:

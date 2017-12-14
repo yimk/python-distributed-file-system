@@ -31,10 +31,13 @@ def lock():
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
 
     # lock the file
+    print(list(helper.db_get_lock(file_code, server)))
     if helper.db_get_lock(file_code, server).count() > 0:
         # already locked
+        print(server)
         return jsonify({'result': 'failed'})
     else:
+        print(server)
         helper.db_lock(file_code, server, user_id)
         return jsonify({'result': 'success'})
 
@@ -62,9 +65,11 @@ def unlock():
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
 
     # lock the file
-    helper.db_unlock(file_code, server, user_id)
+    result = 'failed'
+    if helper.db_unlock(file_code, server, user_id):
+        result = 'success'
 
-    return jsonify({'result': 'success'})
+    return jsonify({'result': result})
 
 
 @app.route('/user/is-locked', methods=['POST'])
@@ -87,7 +92,7 @@ def is_locked():
     tmp_pvk = helper.decrypt(encrypted_tmp_pvk, config.LOCK_SERVER_PRIVATE_KEY)
     file_code = helper.decrypt(encrypted_file_code, tmp_pvk)
     server = helper.decrypt(encrypted_server_addr, tmp_pvk)
-
+    print(list(helper.db_get_lock(file_code, server)))
     # return the result
     lock = helper.db_get_lock(file_code, server)
     locked = 'False'
@@ -98,4 +103,4 @@ def is_locked():
     return jsonify({'locked': helper.encrypt(locked, tmp_pvk), 'locker': helper.encrypt(locker, tmp_pvk)})
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True, port=int(config.LOCK_SERVER_PORT))

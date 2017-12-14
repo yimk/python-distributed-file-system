@@ -93,7 +93,12 @@ def db_lock(file_code, addr, uid):
 
 
 def db_unlock(file_code, addr, uid):
-    lock_table().delete_one({"file_code": file_code, "server": addr, 'uid': uid})
+
+    if db_get_lock(file_code, addr).count() > 0 and db_get_lock(file_code, addr)[0]['uid'] == uid:
+        lock_table().delete_one({"file_code": file_code, "server": addr, 'uid': uid})
+        return True
+    else:
+        return False
 
 
 def db_get_lock(file_code, addr):
