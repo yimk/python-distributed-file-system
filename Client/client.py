@@ -94,10 +94,6 @@ def test():
 
 def run_client():
 
-    from pymongo import MongoClient
-    client = MongoClient("localhost", 27017)
-    table =  client['test-database'].get_collection('test-collection-locking').find({})
-    print(list(table))
     register()
     
     if  len(sys.argv) >= 2 and sys.argv[1] == 'test-mode':

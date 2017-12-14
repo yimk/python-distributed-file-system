@@ -1,4 +1,6 @@
 
+# install essential lib
+pip install -r requirements.txt
 # run mongodb
 mongod &
 
