@@ -57,7 +57,44 @@ I implemented caching in
   - Client: The client will keep the directories of maximum of 50 files in the memory. This reduces the traffic of the system as client do not have to communicate with the directory server as much as before.
   
   
-# Run the application
+# Run the application without docker
+
+1. Ensure Mongodb is installed in the machine
+2. Run the start-service-without-docker.sh file, it
+    
+    - install dependency
+    - start mongodb
+    - run all the servers
+    
+    bash ./start-service-without-docker.sh file
+    
+    
+3. Run Client in test mode
+    
+    python Client/client.py test-mode
+   
+   The test mode does the following:
+   
+    1. Upload a log file to distributed file system. You will now be able to tmp_0, tmp_1 .. folders, you will be able to see that the files are created under these directory
+    
+    2. Download the file again from the DFS and store it in tmp_download_client directory
+    3. Edit the file, it will
+        - lock the target file
+        - display the target file data and ask you to enter new data.
+        - NOW! Do Not enter it. Try to start another client with the same command: python Client/client.py test-mode
+        - You will see that client2 will not be able to upload the file as it is locked. Do not terminate client2, as it will reupload the file automatically after five minutes
+        - Go back to client1 and enter the updated data
+        - Job done
+        - Wait for client 2 and you will be able see that it will upload the file again under the same scenerio after five minutes
+    4. Download the file.
+    
+ 4. Run Client in free-to-go mode, you can create as many client as you want
+    
+      python Client/client.py 
+    
+     
+    
+    
 
   
   
