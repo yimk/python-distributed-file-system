@@ -84,9 +84,9 @@ I implemented caching in
         - NOW! Do Not enter it. Try to start another client with the same command: python Client/client.py test-mode
         - You will see that client2 will not be able to upload the file as it is locked. Do not terminate client2, as it will reupload the file automatically after five minutes
         - Go back to client1 and enter the updated data
-        - Job done
+        - Job done, You can see from tmp_1, tmp_2 that the data is updated
         - Wait for client 2 and you will be able see that it will upload the file again under the same scenerio after five minutes
-    4. Download the file.
+    4. Download the file again, download the updated data to client_tmp_download. You will find the data is updated on client side
     
  4. Run Client in free-to-go mode, you can create as many client as you want
     
