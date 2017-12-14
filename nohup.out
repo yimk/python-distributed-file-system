@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "AuthenticationServer/server.py", line 1, in <module>
+    from flask import Flask
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/flask/__init__.py", line 19, in <module>
+    from jinja2 import Markup, escape
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/jinja2/__init__.py", line 33, in <module>
+    from jinja2.environment import Environment, Template
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/jinja2/environment.py", line 15, in <module>
+    from jinja2 import nodes
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/jinja2/nodes.py", line 19, in <module>
+    from jinja2.utils import Markup
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/jinja2/utils.py", line 624, in <module>
+    from markupsafe import Markup, escape, soft_unicode
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/markupsafe/__init__.py", line 10, in <module>
+    """
+KeyboardInterrupt
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 177-831-554
+Traceback (most recent call last):
+  File "LockingServer/server.py", line 106, in <module>
+    app.run(host="0.0.0.0", debug=True, port=int(config.LOCK_SERVER_PORT))
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/flask/app.py", line 841, in run
+    run_simple(host, port, self, **options)
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/werkzeug/serving.py", line 720, in run_simple
+    s.bind((hostname, port))
+  File "/Users/kiyim/anaconda2/lib/python2.7/socket.py", line 228, in meth
+    return getattr(self._sock,name)(*args)
+socket.error: [Errno 48] Address already in use
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+python: can't open file 'FileServer/server': [Errno 2] No such file or directory
+Traceback (most recent call last):
+  File "LockingServer/server.py", line 106, in <module>
+    app.run(host="0.0.0.0", debug=True, port=int(config.LOCK_SERVER_PORT))
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/flask/app.py", line 841, in run
+ * Running on http://0.0.0.0:5001/ (Press CTRL+C to quit)
+ * Running on http://0.0.0.0:5002/ (Press CTRL+C to quit)
+    run_simple(host, port, self, **options)
+  File "/Users/kiyim/anaconda2/lib/python2.7/site-packages/werkzeug/serving.py", line 720, in run_simple
+    s.bind((hostname, port))
+  File "/Users/kiyim/anaconda2/lib/python2.7/socket.py", line 228, in meth
+    return getattr(self._sock,name)(*args)
+ * Restarting with stat
+ * Restarting with stat
+socket.error: [Errno 48] Address already in use
+ * Debugger is active!
+ * Debugger is active!
+ * Debugger PIN: 177-831-554
+ * Debugger PIN: 177-831-554
+127.0.0.1 - - [14/Dec/2017 19:33:45] "POST /user/get-ticket HTTP/1.1" 200 -
+127.0.0.1 - - [14/Dec/2017 19:33:45] "POST /user/get-ticket HTTP/1.1" 200 -
+127.0.0.1 - - [14/Dec/2017 19:33:46] "POST /user/get-ticket HTTP/1.1" 200 -

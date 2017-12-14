@@ -74,6 +74,8 @@ def register():
         id = rest_messager.register(pbk)
         helper.db_register(pvk, id)
 
+        print("Registration si successful, id: " + id)
+
 
 def test():
     print("test-start")
