@@ -19,7 +19,7 @@ The client provides the following services:
  ## Security Service
  
  - The security service follows the keberos pattern
- - When client starts, it will first check if it is signed up(on the distributed file system).
+ - When client starts, it will first check if it is signed up(on the distributed file system).We assume EACH MACHINE should have only one PRIVATE KEY and we use it to communicate with servers.
  - If not, it will register itself. It will generate a private key and public key pair. 
      - Private Key: Client will keep the private key. 
      - Public Key: Client will encrypt it with the authentication server's public key and send the encrypted public key to client. This ensures man-in-middle will not be able to pretend to be the auth server.
